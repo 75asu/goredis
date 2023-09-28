@@ -2,9 +2,7 @@ package main
 
 import (
     "fmt"
-    "io"
     "net"
-    "os"
 )
 
 func main() {
@@ -27,16 +25,18 @@ func main() {
 
     // infinte loop to receive and response to commands from clients
     for {
-        buf := make([]byte, 1024)
-        _, err := conn.Read(buf)
+        resp := NewResp(conn)
+        value, err := resp.Read()
         if err != nil {
-            if err == io.EOF {
-                fmt.Println("error reading from client: ", err.Error())
-                os.Exit(1)
-            }
+                fmt.Println(err)
+                return
         }
+
+        fmt.Println(value)
 
         // ignore request and send back a pong
         conn.Write([]byte("+Pong From GoRedis\r\n"))
     }
+
+
 }
