@@ -130,3 +130,55 @@ func (r *Resp) readBulk() (Value, error) {
 
     return v, nil
 }
+
+
+func (v value) Marshal() []byte {
+    switch v.typ {
+    case "array":
+        return v.marshalArray()
+    case "bulk":
+        return v.marshalBulk()
+    case "string":
+        return v.marshalString()
+    case "null":
+        return v.marshalNull()
+    case "error":
+        return v.marshalError()
+    default:
+        return []byte{}
+    }
+}
+
+func (v value) marshalString() []byte {
+    var bytes []byte
+    bytes = append(bytes, STRING)
+    bytes = append(bytes, v.str...)
+    bytes = append(bytes, '\r', '\n')
+
+    return bytes
+}
+
+func (v value) marshalBulk() []byte {
+    var bytes []byte
+    bytes = append(bytes, BULK)
+    bytes = append(bytes, strconv.Itoa(len(v.bulk))...)
+    bytes = append(bytes, '\r', '\n')
+    bytes = append(bytes, v.bulk...)
+    bytes = append(bytes, '\r', '\n')
+
+    return bytes
+}
+
+func (v value) marshalArray() []byte {
+    len := len(v.array)
+    var bytes []byte
+    bytes := append(bytes, ARRAY)
+    bytes := append(bytes, strconv.Itoa(len)...)
+    bytes := append(bytes, '\r', '\n')
+
+    for i := 0; i < len; i++ {
+        bytes = append(bytes, v.array[i].Marshal()...)
+    }
+
+    return bytes
+}
