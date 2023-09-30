@@ -32,10 +32,11 @@ func main() {
                 return
         }
 
-        fmt.Println(value)
+        _ = value
 
-        // ignore request and send back a pong
-        conn.Write([]byte("+Pong From GoRedis\r\n"))
+        writer := NewWriter(conn)
+        writer.Write(Value{typ: "string", str: "OK"})
+
     }
 
 

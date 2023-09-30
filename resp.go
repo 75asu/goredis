@@ -151,6 +151,9 @@ func (w *Writer) Write(v value) error {
     return nil
 }
 
+writer := NewWriter(conn)
+writer.Write(Value{typ: "string", str: "OK"})
+
 // marshal value to bytes
 func (v value) Marshal() []byte {
     switch v.typ {
