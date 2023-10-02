@@ -132,7 +132,7 @@ func (r *Resp) readBulk() (Value, error) {
 }
 
 // marshal value to bytes
-func (v value) Marshal() []byte {
+func (v Value) Marshal() []byte {
     switch v.typ {
     case "array":
         return v.marshalArray()
@@ -149,7 +149,7 @@ func (v value) Marshal() []byte {
     }
 }
 
-func (v value) marshalString() []byte {
+func (v Value) marshalString() []byte {
     var bytes []byte
     bytes = append(bytes, STRING)
     bytes = append(bytes, v.str...)
@@ -158,7 +158,7 @@ func (v value) marshalString() []byte {
     return bytes
 }
 
-func (v value) marshalBulk() []byte {
+func (v Value) marshalBulk() []byte {
     var bytes []byte
     bytes = append(bytes, BULK)
     bytes = append(bytes, strconv.Itoa(len(v.bulk))...)
@@ -169,12 +169,12 @@ func (v value) marshalBulk() []byte {
     return bytes
 }
 
-func (v value) marshalArray() []byte {
+func (v Value) marshalArray() []byte {
     len := len(v.array)
     var bytes []byte
-    bytes := append(bytes, ARRAY)
-    bytes := append(bytes, strconv.Itoa(len)...)
-    bytes := append(bytes, '\r', '\n')
+    bytes = append(bytes, ARRAY)
+    bytes = append(bytes, strconv.Itoa(len)...)
+    bytes = append(bytes, '\r', '\n')
 
     for i := 0; i < len; i++ {
         bytes = append(bytes, v.array[i].Marshal()...)
@@ -183,23 +183,23 @@ func (v value) marshalArray() []byte {
     return bytes
 }
 
-func (v value) marshalError() []byte {
+func (v Value) marshalError() []byte {
     var bytes []byte
-    bytes := append(bytes, ERROR)
-    bytes := append(bytes, v.str...)
-    bytes := append(bytes, '\r', '\n')
+    bytes = append(bytes, ERROR)
+    bytes = append(bytes, v.str...)
+    bytes = append(bytes, '\r', '\n')
 
     return bytes
 }
 
-func (v value) marshalNull() []byte {
+func (v Value) marshalNull() []byte {
     return []byte("$-1\r\n")
 }
 
 
 
 // Writer
-type writer struct {
+type Writer struct {
     writer io.Writer
 }
 
@@ -207,7 +207,7 @@ func NewWriter(w io.Writer) *Writer {
     return &Writer{writer:w}
 }
 
-func (w *Writer) Write(v value) error {
+func (w *Writer) Write(v Value) error {
     var bytes = v.Marshal()
 
     _, err := w.writer.Write(bytes)
