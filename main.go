@@ -28,16 +28,16 @@ func main() {
         resp := NewResp(conn)
         value, err := resp.Read()
         if err != nil {
-                fmt.Println(err)
-                return
+            fmt.Println(err)
+            return
         }
 
         _ = value
 
         writer := NewWriter(conn)
         writer.Write(Value{typ: "string", str: "OK"})
-
     }
-
-
 }
+
+
+

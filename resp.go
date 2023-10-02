@@ -131,29 +131,6 @@ func (r *Resp) readBulk() (Value, error) {
     return v, nil
 }
 
-
-type writer struct {
-    writer io.Writer
-}
-
-func NewWrite(w io.Writer) *Writer {
-    return &Writer{writer:w}
-}
-
-func (w *Writer) Write(v value) error {
-    var bytes = v.Marshal()
-
-    _, err := w.writer.Write(bytes)
-    if err != nil {
-        return err
-    }
-
-    return nil
-}
-
-writer := NewWriter(conn)
-writer.Write(Value{typ: "string", str: "OK"})
-
 // marshal value to bytes
 func (v value) Marshal() []byte {
     switch v.typ {
@@ -219,3 +196,24 @@ func (v value) marshalNull() []byte {
     return []byte("$-1\r\n")
 }
 
+
+
+// Writer
+type writer struct {
+    writer io.Writer
+}
+
+func NewWriter(w io.Writer) *Writer {
+    return &Writer{writer:w}
+}
+
+func (w *Writer) Write(v value) error {
+    var bytes = v.Marshal()
+
+    _, err := w.writer.Write(bytes)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
